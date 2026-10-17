@@ -1,0 +1,28 @@
+﻿<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1280px; height: 720px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; color: #eef1f6; text-align: center;
+    background:
+      radial-gradient(800px 420px at 50% -5%, rgba(79,157,255,.38), transparent 70%),
+      radial-gradient(500px 300px at 85% 100%, rgba(255,158,69,.25), transparent 70%),
+      linear-gradient(180deg, #0c1019, #121826);
+  }
+  .top { padding-top: 54px; display: flex; justify-content: center; align-items: center; gap: 18px; }
+  .top img { width: 72px; height: 72px; }
+  .top span { font-size: 62px; font-weight: 700; letter-spacing: -0.03em; }
+  h1 { margin: 14px 0 0; font-size: 30px; font-weight: 600; color: #b8c2d1; letter-spacing: -0.01em; }
+  .shot { position: absolute; left: 50%; transform: translateX(-50%); top: 238px; width: 1000px; border-radius: 16px 16px 0 0; overflow: hidden;
+          box-shadow: 0 -10px 80px -10px rgba(79,157,255,.35), 0 0 0 1px rgba(255,255,255,.08); }
+  .shot img { width: 100%; display: block; }
+  .bar { position: absolute; right: 48px; top: 560px; width: 470px; border-radius: 10px; overflow: hidden;
+         box-shadow: 0 20px 50px -10px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.12); z-index: 2; }
+  .bar img { width: 100%; display: block; }
+</style></head>
+<body>
+  <div class="top"><img src="../../docs/images/logo.png"><span>WinSpeed</span></div>
+  <h1>Internet speed meter for the Windows taskbar · free &amp; open source</h1>
+  <div class="bar"><img src="../../docs/images/taskbar-graph.png"></div>
+  <div class="shot"><img src="../../docs/images/overview-dark.png"></div>
+</body></html>
