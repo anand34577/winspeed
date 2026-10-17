@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>WinSpeed</AssemblyName>
+    <RootNamespace>WinSpeed</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>assets\WinSpeed.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>WinSpeed</Product>
+    <AssemblyTitle>WinSpeed - Internet Speed Meter</AssemblyTitle>
+    <Description>Lightweight taskbar internet speed meter for Windows</Description>
+    <RepositoryUrl>https://github.com/anand34577/winspeed</RepositoryUrl>
+    <Company>Anand</Company>
+    <Copyright>Copyright © 2026 Anand</Copyright>
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="assets\WinSpeed.ico" LogicalName="WinSpeed.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="installer\**;tools\**;dist\**;site\**;wiki\**" />
+  </ItemGroup>
+
+</Project>

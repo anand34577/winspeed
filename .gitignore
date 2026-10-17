@@ -1,0 +1,19 @@
+# build output
+bin/
+obj/
+dist/
+*.user
+*.suo
+.vs/
+
+# runtime data when running portable from the repo
+Data/
+portable
+error.log
+
+# OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
