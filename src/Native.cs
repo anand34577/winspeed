@@ -58,6 +58,25 @@ namespace WinSpeed
         [DllImport("user32.dll")] public static extern IntPtr GetShellWindow();
         [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr h, uint flags);
 
+        public delegate void WinEventProc(IntPtr hook, uint evt, IntPtr hwnd, int idObject, int idChild, uint thread, uint time);
+        public const uint EVENT_SYSTEM_FOREGROUND = 3, WINEVENT_OUTOFCONTEXT = 0, WINEVENT_SKIPOWNPROCESS = 2;
+        [DllImport("user32.dll")] public static extern IntPtr SetWinEventHook(uint min, uint max, IntPtr mod, WinEventProc proc, uint pid, uint tid, uint flags);
+        [DllImport("user32.dll")] public static extern bool UnhookWinEvent(IntPtr hook);
+
+        /// <summary>Taskbar, tray overflow, Start, search and other shell surfaces that raise the taskbar above us.</summary>
+        public static bool IsShellSurface(IntPtr h)
+        {
+            if (h == IntPtr.Zero) return false;
+            switch (ClassOf(h))
+            {
+                case "Shell_TrayWnd": case "Shell_SecondaryTrayWnd": case "NotifyIconOverflowWindow":
+                case "TopLevelWindowForOverflowXamlIsland": case "XamlExplorerHostIslandWindow":
+                case "Windows.UI.Core.CoreWindow": case "TaskListThumbnailWnd": case "Xaml_WindowedPopupClass":
+                    return true;
+                default: return false;
+            }
+        }
+
         public static string ClassOf(IntPtr h)
         {
             var sb = new StringBuilder(256);

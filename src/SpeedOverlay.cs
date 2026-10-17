@@ -64,6 +64,51 @@ namespace WinSpeed
 
         protected override bool ShowWithoutActivation => true;
 
+        // When the taskbar or one of its flyouts (tray overflow, Start, calendar) takes the foreground, Explorer
+        // raises the taskbar to the top of the topmost band and covers the meter. Waiting for the next sample
+        // makes the meter blink, so we watch foreground changes and push the meter back on top straight away,
+        // and keep doing so briefly while a shell surface stays in front (it can re-raise itself as it animates).
+        Native.WinEventProc fgProc;
+        IntPtr fgHook;
+        readonly Timer zGuard = new Timer { Interval = 40 };
+        int zGuardTicks;
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            if (fgHook != IntPtr.Zero) return;
+            fgProc = OnForegroundChanged;
+            fgHook = Native.SetWinEventHook(Native.EVENT_SYSTEM_FOREGROUND, Native.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero,
+                fgProc, 0, 0, Native.WINEVENT_OUTOFCONTEXT | Native.WINEVENT_SKIPOWNPROCESS);
+            zGuard.Tick += (_, __) =>
+            {
+                KeepOnTop();
+                if (++zGuardTicks > 25 && !Native.IsShellSurface(Native.GetForegroundWindow())) zGuard.Stop();
+            };
+        }
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            if (fgHook != IntPtr.Zero) { Native.UnhookWinEvent(fgHook); fgHook = IntPtr.Zero; }
+            zGuard.Stop();
+            base.OnHandleDestroyed(e);
+        }
+
+        void OnForegroundChanged(IntPtr hook, uint evt, IntPtr hwnd, int idObject, int idChild, uint thread, uint time)
+        {
+            if (!Visible || s.Placement == Placement.Floating) return;
+            KeepOnTop();
+            zGuardTicks = 0;
+            if (!zGuard.Enabled) zGuard.Start();
+        }
+
+        void KeepOnTop()
+        {
+            if (!Visible || dragging || !IsHandleCreated) return;
+            Native.SetWindowPos(Handle, Native.HWND_TOPMOST, 0, 0, 0, 0,
+                Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE | Native.SWP_NOOWNERZORDER);
+        }
+
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == Native.WM_MOUSEACTIVATE) { m.Result = (IntPtr)Native.MA_NOACTIVATE; return; }
@@ -106,9 +151,7 @@ namespace WinSpeed
             if (!show) return;
 
             Render(tb);
-            if (!dragging)
-                Native.SetWindowPos(Handle, Native.HWND_TOPMOST, 0, 0, 0, 0,
-                    Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE | Native.SWP_NOOWNERZORDER);
+            KeepOnTop();
 
             if (hovering && TooltipProvider != null)
             {
