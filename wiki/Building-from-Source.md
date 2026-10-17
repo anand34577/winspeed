@@ -3,7 +3,7 @@
 ## Requirements
 
 - Windows 10 or 11
-- [.NET SDK](https://dotnet.microsoft.com/download) 8 or newer. The SDK builds the `net48` target; the reference assemblies come from NuGet.
+- [.NET SDK](https://dotnet.microsoft.com/download) 8 or newer. The SDK builds the `net462` target; the reference assemblies come from NuGet.
 - Optional: [Inno Setup 6](https://jrsoftware.org/isdl.php) for the installer
 
 ## Build
@@ -24,7 +24,7 @@ Output in `dist\`:
 | `WinSpeed-Setup-<ver>.exe` | installer (if Inno Setup is installed) |
 | `SHA256SUMS.txt` | checksums |
 
-For a quick development build: `dotnet build -c Release` → `bin\Release\net48\WinSpeed.exe`. Put an empty `portable` file next to it so your test runs keep their data in `bin\Release\net48\Data` instead of `%APPDATA%`.
+For a quick development build: `dotnet build -c Release` → `bin\Release\net462\WinSpeed.exe`. Put an empty `portable` file next to it so your test runs keep their data in `bin\Release\net462\Data` instead of `%APPDATA%`.
 
 ## Project layout
 
@@ -48,7 +48,7 @@ site/                     the project website (GitHub Pages)
 
 ## Design principles
 
-- **Small and fast.** No third-party runtime dependencies; .NET Framework 4.8 ships with Windows. Keep the exe tiny and idle CPU near zero.
+- **Small and fast.** No third-party runtime dependencies and no extra DLLs. The app targets .NET Framework 4.6.2, which ships with every supported Windows 10 and 11, so nothing has to be installed. Keep the exe tiny and idle CPU near zero.
 - **Private by default.** Nothing leaves the PC unless the user asks for it, or for the documented ping and update check.
 - **Instant settings.** Every option applies immediately and is documented in [Settings reference](Settings-Reference).
 

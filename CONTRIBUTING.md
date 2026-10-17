@@ -14,7 +14,7 @@ The [wiki](https://github.com/anand34577/winspeed/wiki) is generated from the [`
 
 1. Install the [.NET SDK](https://dotnet.microsoft.com/download) 8 or newer (and optionally [Inno Setup 6](https://jrsoftware.org/isdl.php)).
 2. Build: `./build.ps1`, or `dotnet build -c Release` for a quick build.
-3. Put an empty file named `portable` next to `bin\Release\net48\WinSpeed.exe` so test runs keep their data in `bin\Release\net48\Data`.
+3. Put an empty file named `portable` next to `bin\Release\net462\WinSpeed.exe` so test runs keep their data in `bin\Release\net462\Data`.
 
 See [Building from source](https://github.com/anand34577/winspeed/wiki/Building-from-Source) for the project layout.
 

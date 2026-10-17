@@ -8,6 +8,14 @@ namespace WinSpeed
     /// <summary>First-run setup: pick units, position and startup in one screen.</summary>
     sealed class WelcomeForm : Form
     {
+        sealed class Opt
+        {
+            public readonly string t, s, p;
+            public readonly Action pick;
+            public readonly bool sel;
+            public Opt(string t, string s, string p, Action pick, bool sel) { this.t = t; this.s = s; this.p = p; this.pick = pick; this.sel = sel; }
+        }
+
         sealed class Choice : Control
         {
             public string Title, Sub, Preview;
@@ -62,7 +70,7 @@ namespace WinSpeed
             head.Controls.Add(logo); head.Controls.Add(titles);
             flow.Controls.Add(head);
 
-            Choice[] Group(string caption, params (string t, string s, string p, Action pick, bool sel)[] items)
+            Choice[] Group(string caption, params Opt[] items)
             {
                 var l = Ui.Label(caption, null, 10.5f, FontStyle.Bold);
                 l.Margin = new Padding(0, Dpi.S(22), 0, Dpi.S(8));
@@ -82,12 +90,12 @@ namespace WinSpeed
             }
 
             Group("How should speeds be shown?",
-                ("Bytes per second", "Like your browser's download speed", "↓ 2.4 MB/s", () => Unit = UnitMode.AutoBytes, true),
-                ("Bits per second", "Like your internet plan (Mbps)", "↓ 19.6 Mbps", () => Unit = UnitMode.AutoBits, false));
+                new Opt("Bytes per second", "Like your browser's download speed", "↓ 2.4 MB/s", () => Unit = UnitMode.AutoBytes, true),
+                new Opt("Bits per second", "Like your internet plan (Mbps)", "↓ 19.6 Mbps", () => Unit = UnitMode.AutoBits, false));
             Group("Where should the meter sit?",
-                ("Next to the clock", "On the taskbar, beside the tray icons", "▭▭▭  ↓↑  12:30", () => Placement = Placement.TaskbarRight, true),
-                ("Left of the taskbar", "On the taskbar, far left", "↓↑  ▭▭▭", () => Placement = Placement.TaskbarLeft, false),
-                ("Floating window", "A small widget you can put anywhere", "⧉  ↓↑", () => Placement = Placement.Floating, false));
+                new Opt("Next to the clock", "On the taskbar, beside the tray icons", "▭▭▭  ↓↑  12:30", () => Placement = Placement.TaskbarRight, true),
+                new Opt("Left of the taskbar", "On the taskbar, far left", "↓↑  ▭▭▭", () => Placement = Placement.TaskbarLeft, false),
+                new Opt("Floating window", "A small widget you can put anywhere", "⧉  ↓↑", () => Placement = Placement.Floating, false));
 
             var chk = new CheckBox { Text = "Start WinSpeed automatically when I sign in to Windows", Checked = true, AutoSize = true, Margin = new Padding(0, Dpi.S(20), 0, 0) };
             chk.CheckedChanged += (s, e) => Startup = chk.Checked;

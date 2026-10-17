@@ -73,6 +73,22 @@ Filename: "{app}\{#AppExe}"; Parameters: "--exit"; Flags: runhidden waituntilter
 Type: files; Name: "{app}\portable"
 
 [Code]
+// WinSpeed needs .NET Framework 4.6.2 or later, which every supported Windows 10 and 11 already includes.
+// Only the very first Windows 10 builds (1507/1511) without updates lack it.
+function InitializeSetup(): Boolean;
+var
+  ErrorCode: Integer;
+begin
+  Result := IsDotNetInstalled(net462, 0);
+  if not Result then
+  begin
+    if SuppressibleMsgBox('WinSpeed needs Microsoft .NET Framework 4.6.2 or later, which is normally part of Windows.' #13#10#13#10 +
+         'Install the latest Windows updates, or download .NET Framework 4.8 from Microsoft, then run this setup again.' #13#10#13#10 +
+         'Open the download page now?', mbError, MB_YESNO, IDNO) = IDYES then
+      ShellExec('open', 'https://dotnet.microsoft.com/download/dotnet-framework/net48', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  end;
+end;
+
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   ResultCode: Integer;
