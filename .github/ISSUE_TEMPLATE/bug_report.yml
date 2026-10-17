@@ -1,0 +1,48 @@
+name: Bug report
+description: Something isn't working the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report this. A few details help a lot.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Settings → Meter & display
+        2. Choose …
+        3. The meter …
+  - type: input
+    id: version
+    attributes:
+      label: WinSpeed version
+      description: Shown on the About page (right-click the meter → About WinSpeed).
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: windows
+    attributes:
+      label: Windows version
+      options: [Windows 11, Windows 10, Other]
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How is it installed?
+      options: [Installer, Portable zip, Built from source]
+  - type: textarea
+    id: log
+    attributes:
+      label: error.log
+      description: If the data folder contains an error.log, paste it here (right-click the meter → About → Open data folder).
+      render: text

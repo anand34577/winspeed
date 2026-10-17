@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WinSpeed: internet speed meter for the Windows taskbar</title>
+<meta name="description" content="WinSpeed is a tiny, free and open-source internet speed meter for the Windows 10 and 11 taskbar, with speed tests, data-usage history and data-cap alerts.">
+<meta property="og:title" content="WinSpeed: your internet speed, right on the taskbar">
+<meta property="og:description" content="Free, open-source speed meter for Windows 10 & 11. Speed test, data usage history, data-cap alerts.">
+<meta property="og:image" content="https://anand34577.github.io/winspeed/images/social-preview.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="images/logo.png">
+<style>
+  :root {
+    --bg: #0b0e14; --bg2: #11151d; --card: #161b24; --line: #232a36; --text: #eef1f6; --muted: #9aa4b4;
+    --accent: #4f9dff; --accent2: #ff9e45; --good: #3dd68c; --radius: 16px;
+    --shadow: 0 30px 80px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f8fb; --bg2: #ffffff; --card: #ffffff; --line: #e3e8ef; --text: #121822; --muted: #5d6878;
+      --accent: #1f6feb; --accent2: #f07a00; --good: #129e5b;
+      --shadow: 0 30px 70px -25px rgba(20,30,50,.35), 0 0 0 1px rgba(10,20,40,.06);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  nav { position: sticky; top: 0; z-index: 10; backdrop-filter: saturate(160%) blur(14px); background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+  nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; color: var(--text); }
+  .brand img { width: 28px; height: 28px; }
+  nav .links { display: flex; gap: 22px; margin-left: auto; font-size: 15px; }
+  nav .links a { color: var(--muted); }
+  nav .links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 16px; border: 1px solid var(--line); color: var(--text); background: var(--card); transition: transform .15s ease, background .15s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--accent) 70%, transparent); }
+  .btn.small { padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+
+  .hero { position: relative; padding: 88px 0 40px; text-align: center; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: -40% -10% auto; height: 700px; background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%), radial-gradient(closest-side at 70% 40%, color-mix(in srgb, var(--accent2) 18%, transparent), transparent 70%); filter: blur(10px); z-index: -1; }
+  .pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 14px; }
+  .pill b { color: var(--good); font-weight: 600; }
+  h1 { font-size: clamp(38px, 6vw, 68px); line-height: 1.04; letter-spacing: -0.035em; margin: 22px auto 18px; max-width: 900px; }
+  h1 .grad { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lead { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 680px; margin: 0 auto 32px; }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .meta { margin-top: 18px; color: var(--muted); font-size: 14px; }
+  .shot { margin: 56px auto 0; max-width: 1040px; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .taskbar { margin: 28px auto 0; max-width: 760px; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  .caption { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+  section { padding: 90px 0; }
+  .eyebrow { color: var(--accent); font-weight: 600; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+  h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -0.025em; line-height: 1.15; margin: 10px 0 14px; }
+  .sub { color: var(--muted); max-width: 640px; font-size: 18px; }
+  .center { text-align: center; } .center .sub { margin: 0 auto; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 48px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+  .card h3 { margin: 16px 0 8px; font-size: 19px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15.5px; }
+  .icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--c, var(--accent)) 16%, transparent); color: var(--c, var(--accent)); }
+  .icon svg { width: 22px; height: 22px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1.25fr; gap: 56px; align-items: center; }
+  .split.rev { grid-template-columns: 1.25fr 1fr; }
+  .split.rev .text { order: 2; }
+  .split img { border-radius: 12px; box-shadow: var(--shadow); }
+  ul.ticks { list-style: none; padding: 0; margin: 22px 0 0; }
+  ul.ticks li { padding-left: 30px; position: relative; margin: 10px 0; color: var(--muted); }
+  ul.ticks li::before { content: ""; position: absolute; left: 0; top: 6px; width: 18px; height: 18px; border-radius: 6px; background: color-mix(in srgb, var(--good) 18%, transparent); }
+  ul.ticks li::after { content: ""; position: absolute; left: 6px; top: 9px; width: 5px; height: 9px; border: solid var(--good); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  ul.ticks b { color: var(--text); font-weight: 600; }
+
+  .tabs { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 36px 0 26px; }
+  .tabs button { font: inherit; font-size: 15px; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .gallery img { margin: 0 auto; max-width: 1000px; border-radius: 12px; box-shadow: var(--shadow); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; counter-reset: s; }
+  .step { counter-increment: s; }
+  .step::before { content: counter(s); display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; margin-bottom: 14px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 40px; }
+  .stat { text-align: center; padding: 22px; }
+  .stat b { display: block; font-size: 34px; letter-spacing: -0.02em; }
+  .stat span { color: var(--muted); font-size: 14.5px; }
+
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin: 12px 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::after { content: "+"; color: var(--muted); font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); margin: 12px 0 0; }
+  .faq { max-width: 820px; margin: 40px auto 0; }
+
+  .final { text-align: center; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--card)), color-mix(in srgb, var(--accent2) 14%, var(--card))); border: 1px solid var(--line); border-radius: 24px; padding: 64px 24px; }
+  footer { border-top: 1px solid var(--line); padding: 36px 0; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; }
+  footer a { color: var(--muted); } footer a:hover { color: var(--text); }
+
+  @media (max-width: 900px) {
+    .grid, .steps { grid-template-columns: 1fr 1fr; }
+    .split, .split.rev { grid-template-columns: 1fr; gap: 32px; }
+    .split.rev .text { order: 0; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    nav .links a.hide-sm { display: none; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    .grid, .steps { grid-template-columns: 1fr; }
+    nav .links { gap: 14px; }
+    nav .links a:not(.btn) { display: none; }
+    section { padding: 64px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="images/logo.png" alt="">WinSpeed</a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#screens" class="hide-sm">Screenshots</a>
+      <a href="#faq" class="hide-sm">FAQ</a>
+      <a href="https://github.com/anand34577/winspeed/wiki">Guide</a>
+      <a href="https://github.com/anand34577/winspeed">GitHub</a>
+      <a class="btn small primary" href="https://github.com/anand34577/winspeed/releases/latest">Download</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill"><b>●</b> Free &amp; open source · Windows 10 &amp; 11</span>
+    <h1>Your internet speed,<br><span class="grad">right on the taskbar.</span></h1>
+    <p class="lead">WinSpeed is a tiny speed meter that lives next to your clock. It also tests your connection, tracks your data usage and warns you before you hit a cap.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/anand34577/winspeed/releases/latest">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 21h16"/></svg>
+        Download for Windows
+      </a>
+      <a class="btn" href="https://github.com/anand34577/winspeed">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.2 1.77 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <p class="meta">Installer or portable zip · No admin rights · No ads, no telemetry</p>
+
+    <div class="taskbar"><img src="images/taskbar-meter.png" alt="WinSpeed meter on the Windows 11 taskbar" loading="eager"></div>
+    <p class="caption">The meter sits next to the clock and follows your light or dark taskbar.</p>
+    <div class="shot"><img src="images/overview-dark.png" alt="WinSpeed overview window in dark mode"></div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap center">
+    <div class="eyebrow">Features</div>
+    <h2>Everything a speed meter should do.<br>Nothing it shouldn't.</h2>
+    <p class="sub">Small enough to forget it's running, thorough enough to answer "why is my internet slow?"</p>
+  </div>
+  <div class="wrap grid">
+    <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v13m0 0-3-3m3 3 3-3M17 20V7m0 0-3 3m3-3 3 3"/></svg></div>
+      <h3>Live taskbar meter</h3><p>Download and upload speed next to the clock, stacked or on one line, with an optional mini graph and ping.</p></div>
+    <div class="card" style="--c: var(--accent2)"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l4-4M3.5 15a9 9 0 1 1 17 0"/><circle cx="12" cy="14" r="1.5"/></svg></div>
+      <h3>Built-in speed test</h3><p>Download, upload, ping and jitter on Cloudflare's global network, with history, CSV export and scheduling.</p></div>
+    <div class="card" style="--c: #8b5cf6"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+      <h3>Data usage history</h3><p>Hour by hour and per adapter. View by day, month or year, drill down, and export to a spreadsheet.</p></div>
+    <div class="card" style="--c: #f43f5e"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg></div>
+      <h3>Data-cap alerts</h3><p>Set a monthly or daily limit and your billing day. WinSpeed warns you at your chosen percentage and at 100 %.</p></div>
+    <div class="card" style="--c: var(--good)"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M2 9a14 14 0 0 1 20 0"/><circle cx="12" cy="19.5" r="1"/></svg></div>
+      <h3>Connection monitor</h3><p>Latency, jitter and packet loss, plus a notification the moment your internet drops and when it's back.</p></div>
+    <div class="card" style="--c: #0ea5a5"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <h3>Private by design</h3><p>No telemetry, no ads, no account. Privacy mode masks IP and MAC addresses when you share your screen.</p></div>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap split">
+    <div class="text">
+      <div class="eyebrow">Make it yours</div>
+      <h2>Your units. Your look. Your spot.</h2>
+      <p class="sub">Every option applies instantly, so you can see exactly what you're getting.</p>
+      <ul class="ticks">
+        <li><b>KB/s or Mbps</b>: automatic bytes or bits, or any fixed unit, with a 1024 or 1000 multiplier</li>
+        <li><b>Labels, fonts and colours</b>: arrows, text, background opacity and speed highlights</li>
+        <li><b>Anywhere</b>: next to the tray, on the left, or as a floating widget; just drag it</li>
+        <li><b>Out of the way</b>: hides during full-screen games and videos, or click straight through it</li>
+      </ul>
+    </div>
+    <img src="images/meter-dark.png" alt="Meter & display settings" loading="lazy">
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap split rev">
+    <div class="text">
+      <div class="eyebrow">Know your connection</div>
+      <h2>Is it your internet, or is it you?</h2>
+      <p class="sub">Run a speed test in one click, then compare with history to spot slow evenings or a struggling Wi-Fi.</p>
+      <ul class="ticks">
+        <li><b>Multi-stream test</b> for download and upload, with ping and jitter</li>
+        <li><b>History</b> of every result, exportable to CSV</li>
+        <li><b>Scheduled tests</b> with Task Scheduler and <code>--run-speedtest</code></li>
+      </ul>
+    </div>
+    <img src="images/speedtest-dark.png" alt="Speed test page" loading="lazy">
+  </div>
+</section>
+
+<section id="screens" style="padding-top:30px">
+  <div class="wrap center">
+    <div class="eyebrow">Screenshots</div>
+    <h2>Looks right at home on Windows 11.</h2>
+    <p class="sub">Light and dark themes that follow your Windows setting.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-img="overview-dark.png">Overview</button>
+      <button role="tab" aria-selected="false" data-img="usage-dark.png">Data usage</button>
+      <button role="tab" aria-selected="false" data-img="speedtest-light.png">Speed test</button>
+      <button role="tab" aria-selected="false" data-img="connection-dark.png">Connection</button>
+      <button role="tab" aria-selected="false" data-img="settings-light.png">Settings</button>
+      <button role="tab" aria-selected="false" data-img="welcome.png">Welcome</button>
+    </div>
+    <div class="gallery"><img id="gallery-img" src="images/overview-dark.png" alt="WinSpeed screenshot" loading="lazy"></div>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap center">
+    <div class="eyebrow">Lightweight</div>
+    <h2>Built to stay out of your way.</h2>
+  </div>
+  <div class="wrap stats">
+    <div class="card stat"><b>~250 KB</b><span>single exe</span></div>
+    <div class="card stat"><b>~20 MB</b><span>memory in the background</span></div>
+    <div class="card stat"><b>0</b><span>runtimes to install</span></div>
+    <div class="card stat"><b>0</b><span>ads, trackers or accounts</span></div>
+  </div>
+</section>
+
+<section style="padding-top:30px">
+  <div class="wrap center">
+    <div class="eyebrow">Get started</div>
+    <h2>Up and running in a minute.</h2>
+  </div>
+  <div class="wrap steps">
+    <div class="card step"><h3>Download</h3><p>Grab the installer, or the portable zip if you'd rather not install, from the latest release.</p></div>
+    <div class="card step"><h3>Pick your style</h3><p>The welcome screen asks three questions: units, position, and whether to start with Windows.</p></div>
+    <div class="card step"><h3>Right-click for more</h3><p>Right-click the meter for the menu, or double-click it to open the dashboard.</p></div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:30px">
+  <div class="wrap center">
+    <div class="eyebrow">FAQ</div>
+    <h2>Questions, answered.</h2>
+  </div>
+  <div class="wrap faq">
+    <details><summary>Is WinSpeed really free?</summary><p>Yes. It's open source under the MIT licence: free for personal and commercial use, with no ads, no premium tier and no account.</p></details>
+    <details><summary>Does it work on Windows 11's centred taskbar?</summary><p>Yes. It sits next to the system tray on Windows 11 and Windows 10, handles vertical and auto-hiding taskbars, and can also run as a floating widget.</p></details>
+    <details><summary>Will it slow my PC down?</summary><p>No. It uses about 20 MB of memory and well under 1 % CPU. The window only uses resources while it's open.</p></details>
+    <details><summary>Why does Windows SmartScreen warn me?</summary><p>The installer isn't code-signed yet. Click <em>More info → Run anyway</em>. Every release is built publicly by GitHub Actions and comes with SHA-256 checksums.</p></details>
+    <details><summary>What does it send over the internet?</summary><p>Nothing about you. A small ping checks your latency (you can turn it off), it checks GitHub for updates once a day (optional), and the speed test and public-IP lookup only run when you ask. <a href="https://github.com/anand34577/winspeed/wiki/Privacy">Details</a>.</p></details>
+    <details><summary>My numbers double when I use a VPN. Why?</summary><p>They won't by default. WinSpeed counts only physical adapters, because a VPN sends the same traffic through two adapters. You can change which adapters are counted in Settings.</p></details>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="final">
+      <h2>See your speed at a glance.</h2>
+      <p class="sub" style="margin:0 auto 28px">Free forever. Takes a minute to set up.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/anand34577/winspeed/releases/latest">Download WinSpeed</a>
+        <a class="btn" href="https://github.com/anand34577/winspeed/wiki">Read the guide</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>WinSpeed · MIT licence · © 2026 Anand</span>
+    <span>
+      <a href="https://github.com/anand34577/winspeed">GitHub</a> ·
+      <a href="https://github.com/anand34577/winspeed/releases">Releases</a> ·
+      <a href="https://github.com/anand34577/winspeed/wiki">User guide</a> ·
+      <a href="https://github.com/anand34577/winspeed/issues/new/choose">Report an issue</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      document.getElementById('gallery-img').src = 'images/' + b.dataset.img;
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+WinSpeed is free and open source (MIT). [Download](https://github.com/anand34577/winspeed/releases/latest) · [Report an issue](https://github.com/anand34577/winspeed/issues/new/choose) · [Edit this guide](https://github.com/anand34577/winspeed/tree/main/wiki)

@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "wiki/**"
+      - "site/**"
+      - "**.md"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build app, portable zip and installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Smoke test (starts and exits cleanly)
+        shell: pwsh
+        run: |
+          New-Item -ItemType File dist/app/portable | Out-Null
+          New-Item -ItemType Directory dist/app/Data | Out-Null
+          "FirstRun=false`nCheckForUpdates=false" | Set-Content dist/app/Data/settings.ini
+          $p = Start-Process dist/app/WinSpeed.exe -PassThru
+          Start-Sleep -Seconds 5
+          if ($p.HasExited) { throw "WinSpeed exited unexpectedly (code $($p.ExitCode))" }
+          Start-Process dist/app/WinSpeed.exe -ArgumentList "--exit" -Wait
+          Start-Sleep -Seconds 2
+          if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; throw "WinSpeed did not exit on --exit" }
+          if (Test-Path dist/app/Data/error.log) { Get-Content dist/app/Data/error.log; throw "error.log was written" }
+          Remove-Item dist/app/portable, dist/app/Data -Recurse -Force -ErrorAction SilentlyContinue
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: WinSpeed-${{ github.sha }}
+          path: |
+            dist/*.exe
+            dist/*.zip
+            dist/SHA256SUMS.txt
+          retention-days: 14

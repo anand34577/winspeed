@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)build, e.g. v1.0.0"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Work out version
+        id: ver
+        shell: pwsh
+        run: |
+          $tag = "${{ github.event.inputs.tag }}"
+          if (-not $tag) { $tag = "${{ github.ref_name }}" }
+          $version = $tag.TrimStart("v")
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1 -Version ${{ steps.ver.outputs.version }}
+
+      - name: Release notes from CHANGELOG.md
+        shell: pwsh
+        run: |
+          $v = "${{ steps.ver.outputs.version }}"
+          $lines = Get-Content CHANGELOG.md
+          $start = ($lines | Select-String -Pattern "^## \[$([regex]::Escape($v))\]").LineNumber
+          $body = @()
+          if ($start) {
+            for ($i = $start; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match '^## \[') { break }
+              $body += $lines[$i]
+            }
+          }
+          $notes = @"
+          $(($body -join "`n").Trim())
+
+          ### Download
+
+          | File | What it is |
+          |---|---|
+          | **WinSpeed-Setup-$v.exe** | Installer (recommended). No admin rights needed. |
+          | **WinSpeed-Portable-$v.zip** | Portable — unzip and run, settings stay in the folder. |
+          | SHA256SUMS.txt | Checksums to verify the downloads. |
+
+          Requires Windows 10 or 11 (64- or 32-bit). The installer is not code-signed yet, so Windows SmartScreen may ask you to confirm — click **More info → Run anyway**.
+
+          [User guide](https://github.com/${{ github.repository }}/wiki) · [Report a problem](https://github.com/${{ github.repository }}/issues/new/choose)
+          "@
+          $notes -replace '(?m)^          ', '' | Set-Content release-notes.md -Encoding utf8
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: WinSpeed ${{ steps.ver.outputs.version }}
+          body_path: release-notes.md
+          files: |
+            dist/WinSpeed-Setup-${{ steps.ver.outputs.version }}.exe
+            dist/WinSpeed-Portable-${{ steps.ver.outputs.version }}.zip
+            dist/SHA256SUMS.txt
+          fail_on_unmatched_files: true
