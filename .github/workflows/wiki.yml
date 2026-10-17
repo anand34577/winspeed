@@ -28,8 +28,8 @@ jobs:
           set -euo pipefail
           url="https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git"
           if ! git clone --depth 1 "$url" wiki-repo 2>/dev/null; then
-            echo "::error::The wiki repository doesn't exist yet. Open the repository's Wiki tab, create any page once, then re-run this workflow."
-            exit 1
+            echo "::warning title=Wiki not published::The wiki repository doesn't exist yet. Open the repository's Wiki tab, save any page once, then re-run this workflow (Actions → Publish wiki → Run workflow)."
+            exit 0
           fi
           rsync -a --delete --exclude ".git" wiki/ wiki-repo/
           cd wiki-repo
