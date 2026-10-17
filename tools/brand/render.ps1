@@ -1,4 +1,5 @@
-# Renders the social preview (1280x640) and thumbnail (1280x720) into docs/images using Microsoft Edge headless.
+# Renders the social preview (1280x640), thumbnail (1280x720) and README banner (1600x600) into docs/images
+# using Microsoft Edge headless.
 $edge = @("${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe", "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe") |
     Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $edge) { throw "Microsoft Edge not found" }
@@ -17,3 +18,4 @@ function Render([string]$html, [string]$out, [int]$w, [int]$h) {
 
 Render "social-preview.html" "social-preview.png" 1280 640
 Render "thumbnail.html" "thumbnail.png" 1280 720
+Render "banner.html" "banner.png" 1600 600

@@ -45,7 +45,7 @@ About 15–25 MB of RAM and well under 1 % CPU while running in the background. 
 
 ## Does it work on Windows 7 or 8?
 
-It's built and tested for Windows 10 and 11. It may start on 8.1 with .NET Framework 4.8 installed, but that isn't supported.
+It's built and tested for Windows 10 and 11. It may start on 8.1 with .NET Framework 4.6.2 or later installed, but that isn't supported.
 
 ## Where do I report a bug?
 

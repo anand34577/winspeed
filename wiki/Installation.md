@@ -1,6 +1,6 @@
 # Installation
 
-WinSpeed runs on **Windows 10 and Windows 11**. It needs no runtime downloads: it uses .NET Framework 4.8, which is already part of Windows.
+WinSpeed runs on **Windows 10 and Windows 11**. It needs no runtime downloads: it is a single exe that uses .NET Framework (4.6.2 or later), which is already part of Windows 10 version 1607 and later and every version of Windows 11. It runs on 64-bit, 32-bit and ARM PCs.
 
 ## Download
 
