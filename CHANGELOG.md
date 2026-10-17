@@ -4,6 +4,14 @@ All notable changes to WinSpeed are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-17
+
+### Fixed
+- The meter no longer blinks off and back on when you open the tray's hidden-icons menu (^), click the taskbar, or open Start, search or the calendar.
+
+### Changed
+- Runs on every Windows 10 release from version 1607 and on all of Windows 11 with nothing to install. WinSpeed now needs only .NET Framework 4.6.2, which these versions include, and it is still a single exe with no extra DLLs. On the rare system without it, setup explains what to install instead of failing to start.
+
 ## [1.0.0] - 2026-10-17
 
 First public release.
@@ -31,5 +39,6 @@ First public release.
 - Command-line switches for every page plus `--run-speedtest` for scheduled tests.
 - Per-user installer (no admin rights) and portable zip.
 
-[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/anand34577/winspeed/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/anand34577/winspeed/releases/tag/v1.0.0
