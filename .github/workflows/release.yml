@@ -55,7 +55,7 @@ jobs:
           $body = @()
           if ($start) {
             for ($i = $start; $i -lt $lines.Count; $i++) {
-              if ($lines[$i] -match '^## \[') { break }
+              if ($lines[$i] -match '^## \[' -or $lines[$i] -match '^\[[^\]]+\]: ') { break }
               $body += $lines[$i]
             }
           }
