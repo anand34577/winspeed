@@ -1,12 +1,5 @@
 <p align="center">
-  <img src="docs/images/logo.png" width="88" alt="WinSpeed logo">
-</p>
-
-<h1 align="center">WinSpeed</h1>
-
-<p align="center">
-  <b>Your internet speed, right on the Windows taskbar.</b><br>
-  A tiny, free and open-source speed meter with speed tests, data-usage history and data-cap alerts.
+  <img src="docs/images/banner.png" alt="WinSpeed: your internet speed, right on the Windows taskbar. A tiny, free and open-source speed meter with speed tests, data-usage history and data-cap alerts.">
 </p>
 
 <p align="center">
@@ -26,10 +19,6 @@
 
 <p align="center">
   <img src="docs/images/taskbar-meter.png" alt="WinSpeed meter on the Windows 11 taskbar" width="760">
-</p>
-
-<p align="center">
-  <img src="docs/images/overview-dark.png" alt="WinSpeed overview in dark mode" width="860">
 </p>
 
 ## Why WinSpeed
@@ -130,7 +119,7 @@ Prefer not to install? Grab **`WinSpeed-Portable-x.y.z.zip`**, unzip and run `Wi
 
 > The installer isn't code-signed yet, so SmartScreen may ask you to confirm: **More info → Run anyway**. Every release is built from this repository by GitHub Actions and ships with `SHA256SUMS.txt`.
 
-**Requirements:** Windows 10 or 11. Nothing else.
+**Requirements:** Windows 10 (version 1607 or later) or Windows 11, on 64-bit, 32-bit or ARM. Nothing else to install: WinSpeed is a single exe with no extra DLLs.
 
 ## Documentation
 

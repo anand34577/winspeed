@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1600px; height: 600px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; color: #eef1f6;
+    background:
+      radial-gradient(760px 460px at 8% 12%, rgba(79,157,255,.28), transparent 70%),
+      radial-gradient(700px 420px at 98% 100%, rgba(255,158,69,.22), transparent 70%),
+      linear-gradient(135deg, #0a0e16, #121826 60%, #151a26);
+    position: relative;
+  }
+  /* faint grid for depth */
+  body::before { content: ""; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 40px 40px; -webkit-mask-image: radial-gradient(900px 500px at 70% 50%, #000, transparent 75%); }
+
+  .left { position: absolute; left: 80px; top: 70px; width: 600px; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand img { width: 64px; height: 64px; }
+  .brand span { font-size: 44px; font-weight: 700; letter-spacing: -0.03em; }
+  .brand small { margin-left: 6px; font-size: 15px; font-weight: 600; color: #8fc0ff; padding: 4px 10px; border-radius: 999px;
+                 background: rgba(79,157,255,.12); border: 1px solid rgba(79,157,255,.35); }
+  h1 { font-size: 56px; line-height: 1.04; letter-spacing: -0.035em; margin: 30px 0 18px; font-weight: 700; }
+  h1 em { font-style: normal; background: linear-gradient(90deg, #4f9dff, #ff9e45); -webkit-background-clip: text; color: transparent; }
+  p { font-size: 21px; color: #a3adbd; margin: 0 0 34px; line-height: 1.45; width: 540px; }
+
+  .features { display: grid; grid-template-columns: repeat(2, 260px); gap: 14px 22px; }
+  .f { display: flex; align-items: center; gap: 12px; font-size: 17px; color: #d5dbe5; }
+  .f i { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-style: normal; font-size: 17px; flex: none; }
+  .f i.b { background: rgba(79,157,255,.16); color: #6aadff; }
+  .f i.o { background: rgba(255,158,69,.16); color: #ffad66; }
+  .f i.g { background: rgba(61,214,140,.15); color: #4fe39b; }
+  .f i.p { background: rgba(168,128,255,.16); color: #b99bff; }
+
+  .stats { position: absolute; left: 80px; bottom: 44px; display: flex; gap: 0; font-size: 15px; color: #8b95a7; }
+  .stats div { padding: 0 22px; border-left: 1px solid rgba(255,255,255,.12); }
+  .stats div:first-child { padding-left: 0; border-left: 0; }
+  .stats b { color: #eef1f6; font-weight: 600; margin-right: 6px; }
+
+  .win { position: absolute; border-radius: 12px; overflow: hidden;
+         box-shadow: 0 40px 90px -20px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.09); }
+  .win img { width: 100%; display: block; }
+  .back  { left: 760px; top: 46px; width: 760px; }
+  .front { left: 1080px; top: 200px; width: 470px; box-shadow: 0 50px 100px -20px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.14); }
+
+  /* zoomed taskbar meter */
+  .zoom { position: absolute; left: 700px; top: 404px; width: 340px; height: 150px; border-radius: 16px; overflow: hidden;
+          background: url(../../docs/images/taskbar-meter.png) no-repeat; background-size: 2160px 168px; background-position: -1112px -9px;
+          box-shadow: 0 40px 80px -15px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.14), 0 0 0 6px rgba(79,157,255,.10); }
+  .tag { position: absolute; left: 720px; top: 378px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+         color: #0b0f17; background: linear-gradient(90deg, #4f9dff, #7ab6ff); padding: 5px 12px; border-radius: 999px; z-index: 2; }
+</style></head>
+<body>
+  <div class="left">
+    <div class="brand"><img src="../../docs/images/logo.png"><span>WinSpeed</span><small>Free &amp; open source</small></div>
+    <h1>Your internet speed,<br><em>right on the taskbar.</em></h1>
+    <p>A tiny speed meter for Windows 10 &amp; 11 with built-in speed tests, data-usage history and data-cap alerts.</p>
+    <div class="features">
+      <div class="f"><i class="b">⇅</i>Live upload &amp; download</div>
+      <div class="f"><i class="o">◔</i>One-click speed test</div>
+      <div class="f"><i class="g">▥</i>Daily &amp; monthly usage</div>
+      <div class="f"><i class="p">◉</i>Ping, jitter &amp; outages</div>
+    </div>
+  </div>
+  <div class="stats">
+    <div><b>~250 KB</b>single exe</div>
+    <div><b>~15 MB</b>RAM</div>
+    <div><b>0</b>runtimes to install</div>
+    <div><b>No</b>admin rights</div>
+  </div>
+
+  <div class="win back"><img src="../../docs/images/overview-dark.png"></div>
+  <div class="win front"><img src="../../docs/images/speedtest-dark.png"></div>
+  <div class="tag">On your taskbar</div>
+  <div class="zoom"></div>
+</body></html>

@@ -70,7 +70,7 @@ jobs:
           | **WinSpeed-Portable-$v.zip** | Portable — unzip and run, settings stay in the folder. |
           | SHA256SUMS.txt | Checksums to verify the downloads. |
 
-          Requires Windows 10 or 11 (64- or 32-bit). The installer is not code-signed yet, so Windows SmartScreen may ask you to confirm — click **More info → Run anyway**.
+          Runs on Windows 10 (1607 or later) and Windows 11, 64-bit, 32-bit or ARM, with nothing else to install. The installer is not code-signed yet, so Windows SmartScreen may ask you to confirm — click **More info → Run anyway**.
 
           [User guide](https://github.com/${{ github.repository }}/wiki) · [Report a problem](https://github.com/${{ github.repository }}/issues/new/choose)
           "@
