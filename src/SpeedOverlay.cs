@@ -71,7 +71,10 @@ namespace WinSpeed
         Native.WinEventProc fgProc;
         IntPtr fgHook;
         readonly Timer zGuard = new Timer { Interval = 40 };
+        // slower watcher: follows the taskbar layout and steps out of the way of windows stacked over it
+        readonly Timer watcher = new Timer { Interval = 250 };
         int zGuardTicks;
+        bool covered;
 
         protected override void OnHandleCreated(EventArgs e)
         {
@@ -85,12 +88,15 @@ namespace WinSpeed
                 KeepOnTop();
                 if (++zGuardTicks > 25 && !Native.IsShellSurface(Native.GetForegroundWindow())) zGuard.Stop();
             };
+            watcher.Tick += (_, __) => Watch();
+            watcher.Start();
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
         {
             if (fgHook != IntPtr.Zero) { Native.UnhookWinEvent(fgHook); fgHook = IntPtr.Zero; }
             zGuard.Stop();
+            watcher.Stop();
             base.OnHandleDestroyed(e);
         }
 
@@ -102,9 +108,30 @@ namespace WinSpeed
             if (!zGuard.Enabled) zGuard.Start();
         }
 
+        void Watch()
+        {
+            if (!Visible || dragging || !IsHandleCreated || lastSize.IsEmpty) return;
+            var tb = TaskbarInfo.Get();
+            Point loc = ComputeLocation(tb, lastSize.Width, lastSize.Height);
+            if (loc != Location)
+                Native.SetWindowPos(Handle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Native.SWP_NOSIZE | Native.SWP_NOACTIVATE | Native.SWP_NOZORDER);
+            UpdateCovered(tb);
+        }
+
+        /// <summary>The meter is topmost, so it would otherwise draw over any app that gets stacked above the taskbar.</summary>
+        void UpdateCovered(TaskbarInfo tb)
+        {
+            bool now = s.Placement != Placement.Floating && tb.Found && !dragging
+                && Native.IsCoveredByWindow(tb.Handle, tb.Bounds, new Rectangle(Location, lastSize), Handle);
+            if (now == covered) return;
+            covered = now;
+            Native.ShowWindow(Handle, covered ? Native.SW_HIDE : Native.SW_SHOWNOACTIVATE);
+            if (!covered) KeepOnTop();
+        }
+
         void KeepOnTop()
         {
-            if (!Visible || dragging || !IsHandleCreated) return;
+            if (!Visible || covered || dragging || !IsHandleCreated) return;
             Native.SetWindowPos(Handle, Native.HWND_TOPMOST, 0, 0, 0, 0,
                 Native.SWP_NOMOVE | Native.SWP_NOSIZE | Native.SWP_NOACTIVATE | Native.SWP_NOOWNERZORDER);
         }
@@ -147,10 +174,11 @@ namespace WinSpeed
             if (show && s.HideBelowKBps > 0 && Math.Max(rx, tx) < s.HideBelowKBps * 1024.0 && !hovering) show = false;
 
             if (show && !Visible) Show();
-            else if (!show && Visible) { Hide(); return; }
+            else if (!show && Visible) { covered = false; Hide(); return; }
             if (!show) return;
 
             Render(tb);
+            UpdateCovered(tb);
             KeepOnTop();
 
             if (hovering && TooltipProvider != null)
@@ -339,16 +367,35 @@ namespace WinSpeed
                 return new Point(wa.Right - w - Dpi.S(24), wa.Bottom - h - Dpi.S(24));
             }
             var b = tb.Bounds;
+            var others = Native.ForeignTaskbarWindows(tb.Handle, b, IsHandleCreated ? Handle : IntPtr.Zero);
+            int gapPx = Dpi.S(4);
             if (tb.Horizontal)
             {
                 int y = b.Top + (b.Height - h) / 2;
-                int x = s.Placement == Placement.TaskbarLeft ? b.Left + Dpi.S(8) : tb.Tray.Left - w - Dpi.S(4);
+                bool left = s.Placement == Placement.TaskbarLeft;
+                int x = left ? b.Left + Dpi.S(8) : tb.Tray.Left - w - gapPx;
+                // step aside for other apps' widgets: move away (left of them, or right of them when docked left)
+                for (int i = 0; i < others.Count + 1; i++)
+                {
+                    var me = new Rectangle(x, y, w, h);
+                    var hit = others.FirstOrDefault(o => o.IntersectsWith(me));
+                    if (hit.IsEmpty) break;
+                    x = left ? hit.Right + gapPx : hit.Left - w - gapPx;
+                }
                 return new Point(x, y);
             }
             else
             {
                 int x = b.Left + (b.Width - w) / 2;
-                int y = s.Placement == Placement.TaskbarLeft ? b.Top + Dpi.S(8) : tb.Tray.Top - h - Dpi.S(4);
+                bool top = s.Placement == Placement.TaskbarLeft;
+                int y = top ? b.Top + Dpi.S(8) : tb.Tray.Top - h - gapPx;
+                for (int i = 0; i < others.Count + 1; i++)
+                {
+                    var me = new Rectangle(x, y, w, h);
+                    var hit = others.FirstOrDefault(o => o.IntersectsWith(me));
+                    if (hit.IsEmpty) break;
+                    y = top ? hit.Bottom + gapPx : hit.Top - h - gapPx;
+                }
                 return new Point(x, y);
             }
         }
@@ -483,6 +530,8 @@ namespace WinSpeed
             if (disposing)
             {
                 font?.Dispose();
+                watcher.Dispose();
+                zGuard.Dispose();
                 tip.Dispose();
                 sf.Dispose();
                 measureBmp.Dispose();
