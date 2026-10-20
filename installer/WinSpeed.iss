@@ -3,7 +3,7 @@
 
 #define AppName "WinSpeed"
 #ifndef AppVersion
-  #define AppVersion "1.0.1"
+  #define AppVersion "1.0.2"
 #endif
 #define AppExe "WinSpeed.exe"
 #define AppPublisher "Anand"

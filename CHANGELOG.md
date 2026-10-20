@@ -4,6 +4,13 @@ All notable changes to WinSpeed are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-20
+
+### Fixed
+- The meter no longer draws on top of other apps' taskbar widgets or newly added tray items; it moves aside to make room.
+- The meter no longer shows through windows that are stacked above the taskbar (an app dragged over it, a topmost tool); it hides until they move away.
+- The meter now follows taskbar layout changes within a fraction of a second instead of waiting for the next speed sample.
+
 ## [1.0.1] - 2026-10-17
 
 ### Fixed
@@ -39,6 +46,7 @@ First public release.
 - Command-line switches for every page plus `--run-speedtest` for scheduled tests.
 - Per-user installer (no admin rights) and portable zip.
 
-[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/anand34577/winspeed/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/anand34577/winspeed/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/anand34577/winspeed/releases/tag/v1.0.0
