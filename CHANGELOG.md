@@ -4,6 +4,14 @@ All notable changes to WinSpeed are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-25
+
+### Fixed
+- A failed update check (for example while offline) no longer counts as done for the day; WinSpeed tries again on the next check.
+- An out-of-range value in a hand-edited settings file (such as a negative data cap or an unknown display mode) is replaced with the default instead of causing odd behaviour.
+- A hotkey entered as a bare number in settings.ini is rejected instead of being registered as an unrelated key.
+- No update-check notification or dialog is attempted while WinSpeed is closing.
+
 ## [1.0.2] - 2026-10-20
 
 ### Fixed
@@ -46,7 +54,8 @@ First public release.
 - Command-line switches for every page plus `--run-speedtest` for scheduled tests.
 - Per-user installer (no admin rights) and portable zip.
 
-[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/anand34577/winspeed/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/anand34577/winspeed/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/anand34577/winspeed/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/anand34577/winspeed/releases/tag/v1.0.0

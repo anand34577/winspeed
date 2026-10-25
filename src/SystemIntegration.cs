@@ -83,6 +83,7 @@ namespace WinSpeed
                     case "shift": mods |= MOD_SHIFT; break;
                     case "win": case "windows": mods |= MOD_WIN; break;
                     default:
+                        if (char.IsDigit(part[0])) return false; // "5" would parse as a raw key code; digits are named D0-D9
                         try { key = (Keys)Enum.Parse(typeof(Keys), part, true); }
                         catch { return false; }
                         break;
