@@ -35,6 +35,9 @@ jobs:
             choco install innosetup -y --no-progress
           }
 
+      - name: Unit tests
+        run: dotnet test tests/WinSpeed.Tests.csproj -c Release --nologo
+
       - name: Build
         shell: pwsh
         run: ./build.ps1
