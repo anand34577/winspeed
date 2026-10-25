@@ -182,7 +182,22 @@ namespace WinSpeed
             PingIntervalSec = Clamp(PingIntervalSec, 1, 300);
             if (string.IsNullOrWhiteSpace(PingHost)) PingHost = "1.1.1.1";
             LastUpdateCheck ??= ""; SkippedVersion ??= "";
+            MonthlyCapMB = Math.Max(0, MonthlyCapMB);
+            DailyCapMB = Math.Max(0, DailyCapMB);
+            HighlightKBps = Math.Max(0, HighlightKBps);
+            HideBelowKBps = Math.Max(0, HideBelowKBps);
+            RetentionDays = Math.Max(0, RetentionDays);
+            // a hand-edited numeric enum value (e.g. Mode=99) would otherwise reach the switch statements as-is
+            Mode = Valid(Mode, DisplayMode.Separate); Layout = Valid(Layout, LayoutMode.TwoLines);
+            Unit = Valid(Unit, UnitMode.AutoBytes); Style = Valid(Style, UnitStyle.Standard);
+            AutoMinUnit = Valid(AutoMinUnit, MinUnit.Kilo); Placement = Valid(Placement, Placement.TaskbarRight);
+            TrayIcon = Valid(TrayIcon, TrayIconMode.Static); Interfaces = Valid(Interfaces, InterfaceMode.Auto);
+            DoubleClickAction = Valid(DoubleClickAction, ClickAction.Dashboard);
+            TrayClickAction = Valid(TrayClickAction, ClickAction.Dashboard);
+            Theme = Valid(Theme, AppTheme.System);
         }
+
+        static T Valid<T>(T value, T fallback) where T : struct => Enum.IsDefined(typeof(T), value) ? value : fallback;
 
         public void Save() => Save(FilePath);
 

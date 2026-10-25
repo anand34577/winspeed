@@ -150,13 +150,18 @@ namespace WinSpeed
 
         public async System.Threading.Tasks.Task CheckForUpdatesAsync(bool interactive)
         {
+            if (exiting) return;
             string today = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             if (!interactive && (!Settings.CheckForUpdates || Settings.LastUpdateCheck == today)) return;
             UpdateChecker.Release rel = null;
             try { rel = await UpdateChecker.LatestAsync(); }
             catch (Exception ex) { Program.Log(ex); }
-            Settings.LastUpdateCheck = today;
-            Settings.Save();
+            if (exiting) return;
+            if (rel != null) // an unreachable GitHub shouldn't use up the day's check
+            {
+                Settings.LastUpdateCheck = today;
+                Settings.Save();
+            }
 
             if (UpdateChecker.IsNewer(rel) && (interactive || rel.Tag != Settings.SkippedVersion))
             {
