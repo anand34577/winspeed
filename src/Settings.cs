@@ -172,7 +172,7 @@ namespace WinSpeed
             Smoothing = Clamp(Smoothing, 1, 10);
             if (UnitBase != 1000 && UnitBase != 1024) UnitBase = 1024;
             Decimals = Clamp(Decimals, -1, 3);
-            FontSize = Math.Max(5f, Math.Min(36f, FontSize));
+            FontSize = float.IsNaN(FontSize) ? 9f : Math.Max(5f, Math.Min(36f, FontSize));
             BackgroundOpacity = Clamp(BackgroundOpacity, 0, 100);
             BillingDay = Clamp(BillingDay, 1, 28);
             AlertPercent = Clamp(AlertPercent, 1, 100);

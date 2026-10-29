@@ -808,7 +808,8 @@ namespace WinSpeed
                 for (int c = 0; c < lvIf.Columns.Count; c++) sb.Append(lvIf.Columns[c].Text).Append(": ").AppendLine(it.SubItems[c].Text);
                 sb.AppendLine();
             }
-            if (sb.Length > 0) Clipboard.SetText(sb.ToString());
+            try { if (sb.Length > 0) Clipboard.SetText(sb.ToString()); }
+            catch (System.Runtime.InteropServices.ExternalException) { } // clipboard briefly locked by another app
         }
 
         // ================================================================ ABOUT
