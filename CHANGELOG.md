@@ -4,6 +4,15 @@ All notable changes to WinSpeed are listed here. The format follows [Keep a Chan
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-10-29
+
+### Fixed
+- A non-numeric font size in a hand-edited settings file is replaced with the default.
+- A custom update interval from settings.ini is kept instead of snapping to 0.25 s when another setting is changed.
+- Changing an unrelated setting no longer rewrites the monthly data limit (for example 1000 MB becoming 1024 MB) or repeats the "hotkey unavailable" warning.
+- "Copy details" no longer fails when another app is holding the clipboard.
+- A ping or speed test that finishes while WinSpeed is closing no longer touches already-closed windows, and the shared HTTP client is created safely from multiple threads.
+
 ## [1.0.4] - 2026-10-25
 
 ### Changed
@@ -59,7 +68,8 @@ First public release.
 - Command-line switches for every page plus `--run-speedtest` for scheduled tests.
 - Per-user installer (no admin rights) and portable zip.
 
-[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/anand34577/winspeed/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/anand34577/winspeed/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/anand34577/winspeed/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/anand34577/winspeed/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/anand34577/winspeed/compare/v1.0.1...v1.0.2

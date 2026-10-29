@@ -11,8 +11,8 @@
     <RootNamespace>WinSpeed</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>assets\WinSpeed.ico</ApplicationIcon>
-    <Version>1.0.4</Version>
-    <FileVersion>1.0.4.0</FileVersion>
+    <Version>1.0.5</Version>
+    <FileVersion>1.0.5.0</FileVersion>
     <Product>WinSpeed</Product>
     <AssemblyTitle>WinSpeed - Internet Speed Meter</AssemblyTitle>
     <Description>Lightweight taskbar internet speed meter for Windows</Description>

@@ -217,6 +217,7 @@ namespace WinSpeed
                 speedTestCts.Dispose();
                 speedTestCts = null;
             }
+            if (exiting) return;
             SpeedTestFinished?.Invoke(result, error);
             if (result != null && Settings.NotifySpeedTestDone && (window == null || !window.Visible || !window.ContainsFocus))
                 ShowBalloon("Speed test complete",
@@ -545,11 +546,13 @@ namespace WinSpeed
         public void ApplySettings(Settings s)
         {
             s.Sanitize();
+            bool hotkeyChanged = !string.Equals(s.Hotkey, Settings.Hotkey, StringComparison.Ordinal);
             Settings.CopyFrom(s);
             selected = Settings.SelectedSet();
             timer.Interval = Settings.UpdateIntervalMs;
             smooth.Clear();
-            if (!hotkey.Register(Settings.Hotkey) && !string.IsNullOrWhiteSpace(Settings.Hotkey))
+            // only re-register when it changed, so an unrelated setting doesn't repeat the "hotkey unavailable" warning
+            if (hotkeyChanged && !hotkey.Register(Settings.Hotkey) && !string.IsNullOrWhiteSpace(Settings.Hotkey))
                 ShowBalloon("Hotkey unavailable", $"\"{Settings.Hotkey}\" is already used by another program.", ToolTipIcon.Warning);
             Monitor.Invalidate();
             Health.Apply();

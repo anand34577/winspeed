@@ -55,6 +55,14 @@ namespace WinSpeed.Tests
         static string TempFile() => Path.Combine(Path.GetTempPath(), "winspeed-test-" + Guid.NewGuid().ToString("N") + ".ini");
 
         [Fact]
+        public void SanitizeReplacesNaNFontSize()
+        {
+            var s = new Settings { FontSize = float.NaN };
+            s.Sanitize();
+            Assert.Equal(9f, s.FontSize);
+        }
+
+        [Fact]
         public void SanitizeReplacesInvalidValues()
         {
             var s = new Settings

@@ -23,20 +23,27 @@ namespace WinSpeed
         public const string ReleasesUrl = RepoUrl + "/releases";
 
         static HttpClient client;
+        static readonly object clientLock = new object();
 
         public static HttpClient Client
         {
             get
             {
-                if (client != null) return client;
+                lock (clientLock) return client ?? (client = Create());
+            }
+        }
+
+        static HttpClient Create()
+        {
+            {
                 try { ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | (SecurityProtocolType)12288; }
                 catch { ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12; }
                 ServicePointManager.DefaultConnectionLimit = Math.Max(ServicePointManager.DefaultConnectionLimit, 32);
                 ServicePointManager.Expect100Continue = false;
                 var h = new HttpClientHandler { AutomaticDecompression = DecompressionMethods.None, UseCookies = false };
-                client = new HttpClient(h) { Timeout = TimeSpan.FromSeconds(30) };
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("WinSpeed/" + Program.Version + " (+" + RepoUrl + ")");
-                return client;
+                var c = new HttpClient(h) { Timeout = TimeSpan.FromSeconds(30) };
+                c.DefaultRequestHeaders.UserAgent.ParseAdd("WinSpeed/" + Program.Version + " (+" + RepoUrl + ")");
+                return c;
             }
         }
 
@@ -53,7 +60,7 @@ namespace WinSpeed
         readonly Settings s;
         readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
         readonly Queue<double> recent = new Queue<double>();
-        bool busy;
+        bool busy, disposed;
         int failures;
 
         public double? LatencyMs { get; private set; }
@@ -100,6 +107,7 @@ namespace WinSpeed
             {
                 double? rtt = await PingOnce(s.PingHost);
                 if (rtt == null && s.PingHost != "8.8.8.8") rtt = await PingOnce("8.8.8.8"); // ICMP to the chosen host may be blocked
+                if (disposed) return;
 
                 lossWindow.Enqueue(rtt == null);
                 while (lossWindow.Count > 20) lossWindow.Dequeue();
@@ -149,6 +157,7 @@ namespace WinSpeed
 
         public void Dispose()
         {
+            disposed = true;
             NetworkChange.NetworkAvailabilityChanged -= OnAvailability;
             timer.Dispose();
         }

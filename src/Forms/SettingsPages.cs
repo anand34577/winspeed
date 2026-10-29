@@ -476,6 +476,9 @@ namespace WinSpeed
 
                 chkStartup.Checked = StartupManager.Enabled;
                 SetCombo(cbTheme, s.Theme);
+                // a hand-edited interval (e.g. 1500) isn't one of the presets; keep it instead of snapping to 0.25 s on the next change
+                if (!cbInterval.Items.Cast<Item<int>>().Any(i => i.Value == s.UpdateIntervalMs))
+                    cbInterval.Items.Add(new Item<int> { Value = s.UpdateIntervalMs, Text = (s.UpdateIntervalMs / 1000.0).ToString("0.###", System.Globalization.CultureInfo.CurrentCulture) + " seconds" });
                 SetCombo(cbInterval, s.UpdateIntervalMs);
                 numSmoothing.Value = ClampDec(numSmoothing, s.Smoothing);
                 chkUpdates.Checked = s.CheckForUpdates;
@@ -578,7 +581,9 @@ namespace WinSpeed
             }
             s.IncludeVirtual = chkVirtual.Checked;
 
-            s.MonthlyCapMB = (int)Math.Round(numMonthlyCap.Value * 1024m);
+            // the box shows GB rounded to 0.1, so only overwrite the stored MB value when the user actually changed it
+            if (numMonthlyCap.Value != Math.Round(app.Settings.MonthlyCapMB / 1024m, 1))
+                s.MonthlyCapMB = (int)Math.Round(numMonthlyCap.Value * 1024m);
             s.BillingDay = (int)numBillingDay.Value;
             s.DailyCapMB = (int)numDailyCap.Value;
             s.AlertPercent = (int)numAlert.Value;
